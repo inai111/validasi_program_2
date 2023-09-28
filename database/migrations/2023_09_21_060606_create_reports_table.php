@@ -19,9 +19,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('target_id')->constrained('users');
-            $table->enum('status',['accepted','revision','rejected','progress','canceled'])->default('progress');
+            $table->enum('status',['approved','rejected','progress','canceled'])->default('progress');
             $table->string('subject');
-            $table->uuid('slug')->default();
+            $table->uuid('slug')->unique();
 
             $table->timestamps();
             $table->softDeletes();

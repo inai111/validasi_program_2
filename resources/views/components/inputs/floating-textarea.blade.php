@@ -1,12 +1,11 @@
-@props(['inputName','inputPlaceholder','message'=>''])
+@props(['message'=>''])
 
 <div class="form-floating mb-3">
-    <textarea @class([
+    <textarea {{$attributes->class([
         "form-control",
         "is-invalid"=>$message
-        ]) placeholder="{{$inputPlaceholder}}"
-    name="{{ $inputName }}" id="{{ $inputName }}" {{$attributes}}>{{$slot}}</textarea>
-    <label for="{{$inputName}}">{{$inputPlaceholder}}</label>
+        ]) }}>{{$slot}}</textarea>
+    <label for="{{$attributes['id']}}">{{$attributes['placeholder']}}</label>
     @if($message)
         <div class="invalid-feedback">
             {{ $message ?? 'Mohon lengkapi form ini' }}

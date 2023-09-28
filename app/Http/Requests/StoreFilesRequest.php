@@ -3,17 +3,11 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Arr;
+use Illuminate\Validation\Rule;
 
 class StoreFilesRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return false;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,7 +16,17 @@ class StoreFilesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'status'=>Rule::in(['revision','accepted']),
+            'description'=>'string|nullable',
+            'file_path'=>'required|mimeTypes:application/pdf|max:2048'
         ];
+    }
+
+    protected function passedValidation()
+    {
+        $data = $this->validated();
+
+        $data = Arr::only($data,['description','file_path','status']);
+        $this->replace($data);
     }
 }

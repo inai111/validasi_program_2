@@ -17,22 +17,41 @@
         <div class="d-flex flex-column h-100">
             <div class="nav flex-column">
                 <div><strong>Core</strong></div>
-                <a class="nav-link" href="index.html">
+                <a @class(['nav-link', 'active' => request()->routeIs('dashboard')]) href="{{ route('dashboard') }}">
                     Dashboard
                 </a>
                 <div><strong>Interface</strong></div>
-                <a class="nav-link collapsed d-flex justify-content-between" href="#" data-bs-toggle="collapse"
-                    data-bs-target="#collapseReports" aria-expanded="false" aria-controls="collapseReports">
-                    Reports
-                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                </a>
-                <div class="collapse" id="collapseReports" aria-labelledby="headingOne"
-                    data-bs-parent="#sidenavAccordion">
-                    <nav class="nav ms-2 flex-column" aria-label="">
-                        <a class="nav-link" href="{{ route('report.create') }}">Make New Report</a>
-                        <a class="nav-link" href="{{ route('report.index') }}">All Reports</a>
-                    </nav>
-                </div>
+                @if (auth()->user()->roles->contains('name_code', 'admin'))
+                    <a @class(['nav-link', 'active' => request()->routeIs('user.*')]) href="{{ route('user.index') }}">
+                        Users
+                    </a>
+                @endif
+                @if (!auth()->user()->roles->contains('name_code', 'admin'))
+                    <a @class([
+                        'nav-link collapsed d-flex justify-content-between',
+                        'active' => request()->routeIs('report.*'),
+                    ]) href="#" data-bs-toggle="collapse"
+                        data-bs-target="#collapseReports" aria-expanded="false" aria-controls="collapseReports">
+                        Reports
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div @class(['collapse', 'show' => request()->routeIs('report.*')]) id="collapseReports"
+                        aria-labelledby="headingOne"
+                        data-bs-parent="#sidenavAccordion">
+                        <nav class="nav ms-2 flex-column" aria-label="">
+                            <a @class(['nav-link', 'active' => request()->routeIs('report.create')])
+                                href="{{ route('report.create') }}">Make New Report</a>
+                            <a @class(['nav-link', 'active' => request()->routeIs('report.index')])
+                                href="{{ route('report.index') }}">All Reports</a>
+                            <a @class(['nav-link', 'active' => request()->routeIs('report.sent')])
+                                href="{{ route('report.sent') }}">Sent Reports</a>
+                            <a @class([
+                                'nav-link',
+                                'active' => request()->routeIs('report.incoming'),
+                            ]) href="{{ route('report.incoming') }}">Incoming Reports</a>
+                        </nav>
+                    </div>
+                @endif
             </div>
             <div class="mt-auto">
                 <div class="d-flex justify-content-between">

@@ -48,17 +48,12 @@ class User extends Authenticatable
         return $this->belongsToMany(Roles::class,'user_role','user_id','role_id');
     }
 
-    public function reports()
+    public function sent_reports()
     {
         return $this->hasMany(Reports::class);
     }
 
-    public function requested_file()
-    {
-        return $this->hasMany(Reports::class);
-    }
-
-    public function waiting_file()
+    public function incoming_reports()
     {
         return $this->hasMany(Reports::class,'target_id');
     }

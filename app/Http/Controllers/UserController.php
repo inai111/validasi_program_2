@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Roles;
-use App\Http\Requests\StoreRolesRequest;
-use App\Http\Requests\UpdateRolesRequest;
+use App\Models\User;
+use Illuminate\Http\Request;
 
-class RolesController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $users = User::paginate()->appends(request()->query());
+        $roles = Roles::all();
+        return view('user.index',compact('users','roles'));
     }
 
     /**
@@ -27,7 +29,7 @@ class RolesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRolesRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -35,7 +37,7 @@ class RolesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Roles $roles)
+    public function show(string $id)
     {
         //
     }
@@ -43,7 +45,7 @@ class RolesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Roles $roles)
+    public function edit(string $id)
     {
         //
     }
@@ -51,15 +53,15 @@ class RolesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRolesRequest $request, Roles $roles)
+    public function update(Request $request, User $user)
     {
-        
+        return response()->json($request->input());
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Roles $roles)
+    public function destroy(string $id)
     {
         //
     }

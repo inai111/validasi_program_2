@@ -7,10 +7,10 @@
         <div class="border mx-auto w-50 p-5">
             <form method="post">
                 @csrf
-                <x-inputs.floating inputType="email" inputPlaceholder="Email Address" inputName="email"
-                message="" />
-                <x-inputs.floating inputType="password" inputPlaceholder="Password" inputName="password"
-                message="" />
+                <x-inputs.floating type="email" placeholder="Email Address" name="email"
+                message="{{$errors->first('email')}}" value="{{old('email')}}" required/>
+                <x-inputs.floating type="password" placeholder="Password" name="password"
+                message="{{$errors->first('password')}}" required/>
 
                 <div>
                     <button class="btn btn-success" type="submit">Login</button>
