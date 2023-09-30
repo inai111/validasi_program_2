@@ -13,26 +13,25 @@ class ReportsPolicy
      */
     public function viewAny(User $user): bool
     {
-        return !$user->roles->contains('name_code','admin');
+        return !$user->roles->isEmpty();
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Reports $reports): bool
+    public function view(User $user, Reports $report): bool
     {
-        //
+        return $user->roles->contains(function($value){
+            return in_array($value['name_code'],['kabag','direct']);
+        });
     }
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function createReport(User $user): bool
     {
-        return !$user->roles->contains('admin')
-        ||$user->roles->contains(function($value){
-            return in_array($value['name_code'],['kabag','direct']);
-        });
+        return !$user->roles->isEmpty();
     }
 
     /**

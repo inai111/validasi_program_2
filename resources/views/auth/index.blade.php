@@ -5,6 +5,10 @@
 <div class="container">
     <div class="pt-5">
         <div class="border mx-auto w-50 p-5">
+            <div class="mb-3">
+                <h1>Login</h1>
+                <hr>
+            </div>
             <form method="post">
                 @csrf
                 <x-inputs.floating type="email" placeholder="Email Address" name="email"

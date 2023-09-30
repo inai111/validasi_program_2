@@ -43,6 +43,11 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function isAdmin()
+    {
+        return $this->roles->contains('name_code','admin');
+    }
+
     public function roles()
     {
         return $this->belongsToMany(Roles::class,'user_role','user_id','role_id');
@@ -50,11 +55,29 @@ class User extends Authenticatable
 
     public function sent_reports()
     {
-        return $this->hasMany(Reports::class);
+        return $this->hasMany(Reports::class)->orderByRaw("
+        CASE
+            WHEN status = 'progress' THEN 1
+            WHEN status = 'approved' THEN 2
+            WHEN status = 'rejected' THEN 3
+            WHEN status = 'canceled' THEN 4
+            ELSE 5
+        END
+        ")->orderBy('updated_at', 'desc');
     }
 
     public function incoming_reports()
     {
-        return $this->hasMany(Reports::class,'target_id');
+        return $this->hasMany(Reports::class,'target_id')->whereNot('status','canceled')->orderByRaw("
+        CASE
+            WHEN status = 'progress' THEN 1
+            WHEN status = 'approved' THEN 2
+            WHEN status = 'rejected' THEN 3
+            WHEN status = 'canceled' THEN 4
+            ELSE 5
+        END
+        ")->orderBy('updated_at', 'desc');
     }
+
+    
 }

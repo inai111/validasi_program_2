@@ -26,7 +26,7 @@
                         Users
                     </a>
                 @endif
-                @if (!auth()->user()->roles->contains('name_code', 'admin'))
+                @can('viewAnyReport')
                     <a @class([
                         'nav-link collapsed d-flex justify-content-between',
                         'active' => request()->routeIs('report.*'),
@@ -35,23 +35,29 @@
                         Reports
                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
-                    <div @class(['collapse', 'show' => request()->routeIs('report.*')]) id="collapseReports"
-                        aria-labelledby="headingOne"
+                    <div @class(['collapse', 'show' => request()->routeIs('report.*')])
+                        id="collapseReports" aria-labelledby="headingOne"
                         data-bs-parent="#sidenavAccordion">
                         <nav class="nav ms-2 flex-column" aria-label="">
-                            <a @class(['nav-link', 'active' => request()->routeIs('report.create')])
-                                href="{{ route('report.create') }}">Make New Report</a>
-                            <a @class(['nav-link', 'active' => request()->routeIs('report.index')])
-                                href="{{ route('report.index') }}">All Reports</a>
-                            <a @class(['nav-link', 'active' => request()->routeIs('report.sent')])
-                                href="{{ route('report.sent') }}">Sent Reports</a>
-                            <a @class([
-                                'nav-link',
-                                'active' => request()->routeIs('report.incoming'),
-                            ]) href="{{ route('report.incoming') }}">Incoming Reports</a>
+                            <a @class(['nav-link', 
+                            'active' => request()->routeIs('report.create')])
+                            href="{{ route('report.create') }}">Make New Report</a>
+                            <a @class(['nav-link', 
+                            'active' => request()->routeIs('report.index')])
+                            href="{{ route('report.index') }}">All Reports</a>
+                            <a @class(['nav-link', 
+                            'active' => request()->routeIs('report.sent')])
+                            href="{{ route('report.sent') }}">Sent Reports</a>
+                            @can('viewIncomingReport')
+                                <a @class([
+                                    'nav-link',
+                                    'active' => request()->routeIs('report.incoming'),
+                                ]) href="{{ route('report.incoming') }}">Incoming Reports</a>
+                            @endcan
+
                         </nav>
                     </div>
-                @endif
+                @endcan
             </div>
             <div class="mt-auto">
                 <div class="d-flex justify-content-between">
@@ -66,6 +72,7 @@
                             <i class="fa-solid fa-gear fs-4 text-muted"></i>
                         </button>
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('profile') }}">Profile</a></li>
                             <li><a class="dropdown-item" href="{{ route('logout') }}">Logout</a></li>
                         </ul>
                     </div>

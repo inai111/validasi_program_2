@@ -3,10 +3,54 @@
 namespace App\Repositories;
 
 use App\Models\Reports;
+use App\Models\User;
+use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Support\Facades\DB;
 
 class ReportRepository
 {
+    public function all()
+    {
+        $reports = Reports::orderByRaw("
+        CASE
+            WHEN status = 'approved' THEN 1
+            WHEN status = 'progress' THEN 2
+            WHEN status = 'rejected' THEN 3
+            WHEN status = 'canceled' THEN 4
+            ELSE 5
+        END
+        ");
+        return QueryBuilder::for($reports)
+            ->allowedFilters('subject', 'status', 'created_at')
+            ->allowedSorts('created_at', 'subject', 'status')
+            ->paginate(15)->appends(request()->query());
+    }
+
+    public function incoming(User $user)
+    {
+        return QueryBuilder::for($user->incoming_reports())
+            ->allowedFilters('subject', 'status', 'created_at')
+            ->allowedSorts('created_at', 'subject', 'status')
+            ->paginate(15)->appends(request()->query());
+    }
+
+    public function incomingProgress(User $user)
+    {
+        $reports = $user->incoming_reports()->where('status','progress');
+        return QueryBuilder::for($reports)
+            ->allowedFilters('subject', 'status', 'created_at')
+            ->allowedSorts('created_at', 'subject', 'status')
+            ->paginate(15)->appends(request()->query());
+    }
+
+    public function sent(User $user)
+    {
+        return QueryBuilder::for($user->sent_reports())
+            ->allowedFilters('subject', 'status', 'created_at')
+            ->allowedSorts('created_at', 'subject', 'status')
+            ->paginate(15)->appends(request()->query());
+    }
+
     public function create(array $data)
     {
         DB::transaction(function()use($data){

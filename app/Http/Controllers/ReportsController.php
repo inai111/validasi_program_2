@@ -19,63 +19,36 @@ class ReportsController extends Controller
      */
     public function index()
     {
-        $this->authorize('viewAny',Reports::class);
-        $users = auth()->user();
-        $reports = Reports::orderByRaw("
-        CASE
-            WHEN status = 'approved' THEN 1
-            WHEN status = 'progress' THEN 2
-            WHEN status = 'rejected' THEN 3
-            WHEN status = 'canceled' THEN 4
-            ELSE 5
-        END
-        ");
-        $reports = QueryBuilder::for($reports)
-            ->allowedFilters('subject', 'status', 'created_at')
-            ->allowedSorts('created_at', 'subject', 'status')
-            ->get();
+        $this->authorize('viewAnyReport',Reports::class);
         $title = 'All Report';
-        return view('report.index', compact('reports'));
+
+        $repo = new ReportRepository();
+        $reports = $repo->all();
+
+        return view('report.index', compact('reports','title'));
     }
     public function sent()
     {
-        $this->authorize('viewAny',Reports::class);
-        $users = auth()->user();
-        $reports = $users->sent_reports()->orderByRaw("
-        CASE
-            WHEN status = 'progress' THEN 1
-            WHEN status = 'approved' THEN 2
-            WHEN status = 'rejected' THEN 3
-            WHEN status = 'canceled' THEN 4
-            ELSE 5
-        END
-        ");
-        $reports = QueryBuilder::for($reports)
-            ->allowedFilters('subject', 'status', 'created_at')
-            ->allowedSorts('created_at', 'subject', 'status')
-            ->get();
+        $this->authorize('viewAnyReport',Reports::class);
         $title = 'Sent Report';
-        return view('report.sent', compact('reports'));
+
+        $user = auth()->user();
+
+        $repo = new ReportRepository();
+        $reports = $repo->sent($user);
+        
+        return view('report.sent', compact('reports','title'));
     }
     public function incoming()
     {
-        $this->authorize('viewAny',Reports::class);
-
-        $users = auth()->user();
-        $reports = $users->incoming_reports()->orderByRaw("
-        CASE
-            WHEN status = 'progress' THEN 1
-            WHEN status = 'approved' THEN 2
-            WHEN status = 'rejected' THEN 3
-            WHEN status = 'canceled' THEN 4
-            ELSE 5
-        END
-        ");
-        $reports = QueryBuilder::for($reports)
-            ->allowedFilters('subject', 'status', 'created_at')
-            ->allowedSorts('created_at', 'subject', 'status')
-            ->get();
+        $this->authorize('viewIncomingReport');
         $title = 'Incoming Report';
+
+        $user = auth()->user();
+
+        $repo = new ReportRepository();
+        $reports = $repo->incoming($user);
+
         return view('report.incoming', compact('reports', 'title'));
     }
 
@@ -84,10 +57,14 @@ class ReportsController extends Controller
      */
     public function create()
     {
+        $this->authorize('createReport',Reports::class);
+        $title = 'Create Report';
+
         $users = User::where('id', '!=', auth()->user()->id)->whereHas('roles', function ($query) {
             $query->whereIn('roles.id', [2, 3]);
         })->get();
-        return view('report.create', compact('users'));
+
+        return view('report.create', compact('users','title'));
     }
 
     /**
@@ -114,7 +91,10 @@ class ReportsController extends Controller
      */
     public function show(Reports $report)
     {
-        return view('report.detail', compact('report'));
+        $this->authorize('viewAnyReport',Reports::class);
+        $title = 'Detail Report';
+
+        return view('report.detail', compact('report','title'));
     }
 
     /**

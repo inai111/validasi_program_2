@@ -94,30 +94,4 @@
             </table>
         </div>
     </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="updateModelConfirmation" tabindex="-1" aria-labelledby="updateModelConfirmationLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="updateModelConfirmationLabel">Confirmation</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    cancel report
-                </div>
-                <div class="modal-footer">
-                    <form>
-                        @method('PUT')
-                        @csrf
-                        <input type="hidden" name="report" value="1">
-                        <input type="hidden" name="status" value="approved">
-                        <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Confirm</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection

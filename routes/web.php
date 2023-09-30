@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FilesController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UserController;
 use App\Models\Files;
@@ -43,6 +44,12 @@ Route::group(['middleware'=>'auth'], function (){
     # rute /dashboard yang tersedia
     Route::group(['prefix' => 'dashboard'],function (){
         Route::get('/',[DashboardController::class,'index'])->name('dashboard');
+    });
+
+    # rute /profile yang tersedia
+    Route::group(['prefix' => 'profile'],function (){
+        Route::get('/',[ProfileController::class,'edit'])->name('profile');
+        Route::put('/',[ProfileController::class,'update']);
     });
 
     # rute /report yang tersedia

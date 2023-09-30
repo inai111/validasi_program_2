@@ -23,7 +23,7 @@ class UpdateFilesRequest extends FormRequest
             }),'string','nullable'],
             'file_path'=>[Rule::requiredIf(function(){
                 return $this->status=='accepted';
-            }),'mimeTypes:application/pdf|max:2048'],
+            }),'mimeTypes:application/pdf','max:2048'],
         ];
     }
 

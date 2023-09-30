@@ -14,7 +14,6 @@
             <hr>
         </div>
         <div class="mb-3">
-            <div class="mb-3"></div>
             <table class="table">
                 <thead>
                     <tr>
