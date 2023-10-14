@@ -71,6 +71,12 @@ Route::group(['middleware'=>'auth'], function (){
     Route::get('/file/{file}/download',function(Files $file){
         return response()->download(storage_path('app/'.$file->file_path));
     })->name('file.download');
+    Route::post('/file/{file}/edit',function(Files $file){
+        $filePath = request()->file('file_path')->store('pdfs');
+        $file->file_path = $filePath;
+        $file->save();
+        return response('',204);
+    });
     Route::resource('file',FilesController::class)->names([
     'show' => 'file.show',
     'update' => 'file.update',
