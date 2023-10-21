@@ -7,7 +7,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UserController;
 use App\Models\Files;
+use App\Models\Reports;
 use App\Models\User;
+use App\Repositories\FileRepository;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,9 +39,7 @@ Route::group(['middleware'=>'guest'], function (){
 
 # user telah login hanya dapat akses rute ini
 Route::group(['middleware'=>'auth'], function (){
-    Route::get('/', function () {
-        return view('welcome');
-    });
+    Route::get('/',[DashboardController::class,'index'])->name('dashboard');
 
     # rute /dashboard yang tersedia
     Route::group(['prefix' => 'dashboard'],function (){
@@ -60,22 +60,30 @@ Route::group(['middleware'=>'auth'], function (){
     Route::post('/report/{report}/add-file',[ReportsController::class,'addfile'])
     ->name('report.add-file');
 
-    Route::resource('report',ReportsController::class)->names([
-    'index' => 'report.index',
-    'update' => 'report.update',
-    'create' => 'report.create',
-    'store' => 'report.store',
-    ]);
+    Route::resource('report',ReportsController::class)->names('report');
 
     # rute /file yang tersedia
     Route::get('/file/{file}/download',function(Files $file){
         return response()->download(storage_path('app/'.$file->file_path));
     })->name('file.download');
     Route::post('/file/{file}/edit',function(Files $file){
-        $filePath = request()->file('file_path')->store('pdfs');
-        $file->file_path = $filePath;
-        $file->save();
-        return response('',204);
+        $report = Reports::where('id',$file->report_id)->firstOrFail();
+        $data = ['status'=>'accepted','comment'=>"OK"];
+        $repo = new FileRepository();
+        $repo->updateStatus($file,$data);
+        return response()->json(["url"=>route('report.show',['report'=>$report->slug])],201);
+        // return DB::transaction(function()use($file){
+        //     # ambil data report
+        //     $report = Reports::where('id',$file->report_id)->firstOrFail();
+        //     $filePath = request()->file('file_path')->store('pdfs');
+        //     $file = $report->files()->create([
+        //         'file_path' => $filePath,
+        //         'status' => "accepted"
+        //     ]);
+        //     $report->file_id = $file->id;
+        //     $report->save();
+        //     return response()->json(["url"=>route('report.show',['report'=>$report->slug])],201);
+        // });
     });
     Route::resource('file',FilesController::class)->names([
     'show' => 'file.show',

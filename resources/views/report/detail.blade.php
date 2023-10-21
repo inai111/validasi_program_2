@@ -82,10 +82,14 @@
 
                                             <div class="btn-group ms-auto">
                                                 @can('update', $file)
-                                                    <button type="button"
+                                                    {{-- <button type="button"
                                                         v-on:click="confirmAction(
                                                         {slug:'{{ $file->slug }}',status:'accepted'})"
-                                                        class="btn shadow btn-success btn-sm">Accept</button>
+                                                        class="btn shadow btn-success btn-sm">Accept</button> --}}
+                                                    <a href="{{route('file.edit', ['file' => $file->slug]) }}"
+                                                        v-on:click="confirmAction(
+                                                        {slug:'{{ $file->slug }}',status:'accepted'})"
+                                                        class="btn shadow btn-success btn-sm">Accept</a>
                                                     <button type="button"
                                                         v-on:click="confirmAction(
                                                         {slug:'{{ $file->slug }}',status:'revision'})"

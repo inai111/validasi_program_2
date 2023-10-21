@@ -15,7 +15,7 @@ const appPdf = createApp({
   data() {
     return {
       stamp: {},
-      fileUrl: location.pathname.replace('/edit', ''),
+      fileUrl: location.pathname.replace('/edit', '?'+new Date().getTime()),
       container:document.querySelector(`#containerPdf`),
       page: 1,
       pageMax: 0,
@@ -23,11 +23,21 @@ const appPdf = createApp({
       pdfViewOption: {},
       stampIsDragging: 0,
       position: {},
-      pagesPdf: []
+      pagesPdf: [],
+      modal: {},
+      imageUrl:"",
+      imageBuff:{},
+      disabledStamp:false
     }
   },
   mounted() {
     this.initPdfView();
+    let modal = {
+      modalElem: new bootstrap.Modal(document.getElementById('modalStamp')),
+      show: function () { this.modalElem.show() },
+      hide: function () { this.modalElem.hide() }
+    }
+    this.modal = modal;
   },
   methods: {
     changePage() {
@@ -40,24 +50,10 @@ const appPdf = createApp({
       const eventBus = new EventBus();
       const loadingTask = getDocument(this.fileUrl);
       const pdfDocument = await loadingTask.promise;
-
-      // const container = document.getElementById("containerPdf");
-      
       const container = document.getElementById("viewerContainer");
-      
+
       this.pageMax = pdfDocument._pdfInfo.numPages
-      
-      // const pagePdf = await pdfDocument.getPage(this.page);
-      
-      
-      // Creating the page view with default parameters.
-      // const pdfPageView = new PDFViewer({
-      //   container,
-      //   id: this.page,
-      //   scale: 1.0,
-      //   defaultViewport: pagePdf.getViewport({ scale: 1.0 }),
-      //   eventBus,
-      // });
+
       const pdfPageView = new PDFViewer({
         container,
         eventBus,
@@ -65,7 +61,9 @@ const appPdf = createApp({
 
       // // Associate the actual page with the view, and draw it.
       pdfPageView.setDocument(pdfDocument);
-      // return pdfPageView.draw();
+      pdfPageView.eventBus.on('pagechanging', function (e) {
+        appPdf.page = e.pageNumber;
+      });
     },
     async editText() {
       // Baca file PDF yang akan diedit
@@ -74,26 +72,44 @@ const appPdf = createApp({
       const pdfBuffer = filePdf;
       const pdfDoc = await PDFDocument.load(pdfBuffer);
 
-      // Halaman yang akan diedit (indeks dimulai dari 0)
-      const pagesToEdit = 0;
+      // cek semua dari page yang telah di tampilkan
+      document.querySelectorAll(`#viewerContainer .page`).forEach(page=>{
+        const stamps = page.querySelectorAll(`.stamp-container .draggable`);
+        if(stamps.length > 0){
+          const pagePdf = pdfDoc.getPages()[page.dataset.pageNumber-1];
+          stamps.forEach(async stamp=>{
+            const width = stamp.style.width||"100px";
+            const height = stamp.style.height||"100px";
+            const transform = stamp.style.transform||"translate(0px, 0px)";
+            const [,x, y] = transform.match(/translate\((-?\d+)px, (-?\d+)px\)/);
+            const imageJpeg = await pdfDoc.embedJpg(this.imageBuff);
 
-      // Loop melalui halaman yang akan diedit
-      const page = pdfDoc.getPages()[pagesToEdit];
+            let [convertX,convertY] = [x/1.3333333,pagePdf.getHeight()-(Number(y)/1.3333333)];
+            let [widthImg,heightImg] = [Number(width.replace('px', '')),Number(height.replace('px', ''))];
+            let [widthPdf,heightPdf] = [pagePdf.getWidth(),pagePdf.getHeight()];
 
-      // Tambahkan teks atau elemen lain ke halaman jika diperlukan
-      // Misalnya, untuk menambahkan teks ke halaman:
-      page.drawText('Ini adalah teks yang ditambahkan ke halaman.', {
-        x: 570,
-        y: 50,
-        size: 12,
-        color: rgb(0, 0, 0), // Warna teks hitam
-      });
+            if (convertX < 0) convertX = 0;
+            if (convertY < 0) convertY = 0;
+            if (convertX > widthPdf - 100) convertX = widthPdf - 100 - (widthImg/2);
+            if (convertY > heightPdf - 100) convertY = heightPdf - 100 - (heightImg/2);
+
+            let option = {
+              x: Number(convertX),
+              y: Number(convertY),
+              width: Number(widthImg)/1.3333333,
+              height: Number(heightImg)/1.3333333,
+            };
+            pagePdf.drawImage(imageJpeg,option);
+          })
+          
+        }
+      })
 
       // Simpan PDF yang telah diedit ke file baru
       const editedPdfBytes = await pdfDoc.save();
       let formdata = new FormData();
       formdata.append('file_path', new Blob([editedPdfBytes], { type: 'application/pdf' }), 'file.pdf')
-      axios.post('/file/60fcf12a-5dac-11ee-8e02-00ff6b16807a/edit', formdata)
+      axios.post(location.pathname, formdata)
         // fetch('/file/60fcf12a-5dac-11ee-8e02-00ff6b16807a/edit',{
         //   method:"PUT",
         //   body:formdata,
@@ -103,12 +119,11 @@ const appPdf = createApp({
         //   }
         // })
         // .then(ee=>ee.json())
-        .then(ee => console.log(ee))
-      // await downloadFn(editedPdfBytes, 'ama.pdf', 'application/pdf')
-      // await fs.writeFile('nama_file_diedit.pdf', editedPdfBytes);
-    },
-    startDragging(event) {
-      this.stampIsDragging = 1;
+        .then(ee =>{
+          if(ee.data.url){
+            location.href = ee.data.url
+          }
+        })
     },
     initDragable(id) {
       this.position[id] = { x: 0, y: 0 };
@@ -135,7 +150,7 @@ const appPdf = createApp({
         .draggable({
           modifiers: [
             interact.modifiers.restrictRect({
-              restriction: '.position-relative',
+              restriction: '.canvasWrapper',
               endOnly: true
             })
           ],
@@ -151,9 +166,56 @@ const appPdf = createApp({
           }
         })
     },
-    addStamp(event) {
+    openModal() {
+      document.querySelector('#modalStamp form').reset();
+      if(this.disabledStamp)return;
+      this.modal.show();
+    },
+    uploadFile(event){
+      event.preventDefault();
+      const fileInput = document.querySelector('#modalStamp input[name=image]');
+      const file = fileInput.files[0];
+    
+      if (file) {
+          const reader = new FileReader();
 
-      console.log(event, this.$refs)
-    }
+          reader.onload = function(e) {
+              const arrayBuffer = e.target.result;
+              const fileURL = window.URL.createObjectURL(file);
+              
+              appPdf.imageUrl =  fileURL;
+              appPdf.imageBuff =  arrayBuffer;
+              appPdf.addStamp();
+          };
+
+          reader.readAsArrayBuffer(file);
+      }
+    },
+    addStamp() {
+      this.modal.hide();
+      this.$refs.stampButton.classList.add('disabled')
+      this.disabledStamp = true;
+      console.log(this.imageUrl,this.imageBuff)
+      let container = document.querySelector(`#viewerContainer .page[data-page-number="1"] .stamp-container`);
+      if (!container) {
+        let div = document.createElement('div');
+        let page = this.page;
+        div.classList.add('stamp-container', 'position-absolute');
+        div.style.zIndex = 5;
+        document.querySelector(`#viewerContainer .page[data-page-number="${page}"] .canvasWrapper`).insertAdjacentElement('afterbegin', div);
+        container = document.querySelector(`#viewerContainer .page[data-page-number="${page}"] .stamp-container`);
+        let stampHtml = `<div id="stamp-1" class="draggable border position-absolute" style="width:100px;height:100px;z-index:2">
+        <img style="object-fit: fill;object-position: center;width: 100%;height: 100%;"
+            src="${this.imageUrl}"
+            alt="">
+        </div>`;
+        container.insertAdjacentHTML('beforeend', stampHtml);
+        // }else{
+      }
+      // this.initDragable("#stamp-1")
+      if (container.querySelector('#stamp-1')) {
+        this.initDragable("#stamp-1")
+      }
+    },
   }
 }).mount('#appPdf');

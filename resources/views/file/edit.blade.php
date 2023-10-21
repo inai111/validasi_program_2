@@ -7,7 +7,7 @@
 @section('body')
 <style>
     body{
-        background-color:var(--bs-gray-200);
+        background-color:var(--bs-gray-300);
     }
     #viewerContainer {
       overflow: auto;
@@ -24,7 +24,7 @@
                         :max="pageMax">
                     <div class="navbar-nav flex-row gap-3">
                         <a class="nav-link" href="#">
-                            <button v-on:click="" class="btn btn-outline-light btn-sm">
+                            <button ref="stampButton" v-on:click="openModal()" class="btn btn-outline-light btn-sm">
                                 Stamp
                             </button>
                         </a>
@@ -44,7 +44,7 @@
             {{-- <div id="containerPdf" class="pdfViewer singlePageView"> --}}
         </div>
 
-        <div class="wrapper pt-4">
+        {{-- <div class="wrapper pt-4">
             <div class="mt-5" id="containerPd" style="display: none">
 
                 <div class="mb-3">
@@ -54,15 +54,34 @@
                             <canvas></canvas>
                         </div>
                         <div class="stamp-container">
-                            {{-- <div id="stamp-1" class="draggable border" style="width:100px;height:100px;">
+                            <div id="stamp-1" class="draggable border" style="width:100px;height:100px;">
                                 <img style="object-fit: fill;object-position: center;width: 100%;height: 100%;"
                                     src="https://o-cdf.sirclocdn.com/unsafe/o-cdn-cas.sirclocdn.com/parenting/images/Cara-Menggambar-Pemandangan-hello.width-800.format-webp.webp"
                                     alt="">
-                            </div> --}}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
+        <div class="modal" id="modalStamp" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Modal title</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" v-on:submit="uploadFile">
+                        <div class="mb-3">
+                            <input type="file" required class="form-control" name="image"
+                            accept="image/png,image/jpeg,image/jpg">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>
+                </div>
+              </div>
+            </div>
+          </div>
     </div>
 @endsection
