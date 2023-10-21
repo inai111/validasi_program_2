@@ -6,6 +6,7 @@ use App\Models\Files;
 use App\Http\Requests\StoreFilesRequest;
 use App\Http\Requests\UpdateFilesRequest;
 use App\Repositories\FileRepository;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class FilesController extends Controller
@@ -45,9 +46,9 @@ class FilesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Files $files)
+    public function edit(Files $file)
     {
-        //
+        return view('file.edit',compact('file'));
     }
 
     /**
@@ -61,6 +62,15 @@ class FilesController extends Controller
         $repo = new FileRepository();
         $repo->updateStatus($file,$data);
         return redirect()->back()->with('message','Update success');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function updatefile(Request $request, Files $file)
+    {
+        $this->authorize('update',$file);
+        return response($request->input());
     }
 
     /**
