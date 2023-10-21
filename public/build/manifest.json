@@ -1,0 +1,50 @@
+{
+  "_axios-82afda87.js": {
+    "file": "assets/axios-82afda87.js"
+  },
+  "node_modules/pdfjs-dist/web/images/loading-icon.gif": {
+    "file": "assets/loading-icon-483c4a03.gif",
+    "src": "node_modules/pdfjs-dist/web/images/loading-icon.gif"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-4ed993c7.js",
+    "isEntry": true,
+    "src": "resources/css/app.css"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-8e31f628.js",
+    "imports": [
+      "_axios-82afda87.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/app.js"
+  },
+  "resources/js/bundle/dashboard.bundle.js": {
+    "file": "assets/dashboard.bundle-3abe8c0c.js",
+    "isEntry": true,
+    "src": "resources/js/bundle/dashboard.bundle.js"
+  },
+  "resources/js/bundle/detail.bundle.js": {
+    "file": "assets/detail.bundle-51e3465e.js",
+    "isEntry": true,
+    "src": "resources/js/bundle/detail.bundle.js"
+  },
+  "resources/js/bundle/show-file.bundle.css": {
+    "file": "assets/show-file.bundle-a5cac9aa.css",
+    "src": "resources/js/bundle/show-file.bundle.css"
+  },
+  "resources/js/bundle/show-file.bundle.js": {
+    "assets": [
+      "assets/loading-icon-483c4a03.gif"
+    ],
+    "css": [
+      "assets/show-file.bundle-a5cac9aa.css"
+    ],
+    "file": "assets/show-file.bundle-35df8111.js",
+    "imports": [
+      "_axios-82afda87.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/bundle/show-file.bundle.js"
+  }
+}
