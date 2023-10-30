@@ -17,6 +17,9 @@
 </head>
 
 <body>
+    <header>
+        @yield('header')
+    </header>
     <main>
         <div class="toast-container position-fixed end-0 p-3">
             @if (session('message'))
@@ -32,28 +35,7 @@
             @endif
         </div>
 
-        <div class="container">
-            <div class="pt-5">
-                <div class="border mx-auto w-50 p-5">
-                    <div class="mb-3">
-                        <h1>Login</h1>
-                        <hr>
-                    </div>
-                    <form method="post">
-                        @csrf
-                        <x-inputs.floating type="email" placeholder="Email Address" name="email"
-                        message="{{$errors->first('email')}}" value="{{old('email')}}" required/>
-                        <x-inputs.floating type="password" placeholder="Password" name="password"
-                        message="{{$errors->first('password')}}" required/>
-        
-                        <div>
-                            <button class="btn btn-success" type="submit">Login</button>
-                        </div>
-                        <a href="{{route('register')}}" class="">Buat akun baru</a>
-                    </form>
-                </div>
-            </div>
-        </div>
+        @yield('body')
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"

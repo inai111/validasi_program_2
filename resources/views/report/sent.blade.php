@@ -1,11 +1,34 @@
 @extends('layouts.app')
 
-@section('header') <x-header />
 @section('body')
-    <div id="app" class="container">
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="mb-0">Report Sent</h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="{{route('report.index')}}">Report</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Sent
+                    </li>
+                </ol>
+            </div>
+        </div>
+        <!--end::Row-->
+    </div>
+    <!--end::Container-->
+</div>
+<!--end::App Content Header-->
+<!--begin::App Content-->
+<div class="app-content">
+    <!--begin::Container-->
+    <div id="app" class="container-fluid">
         <div class="mb-3">
-            <div class="d-flex justify-content-between align-items-end">
-                <h1>Sent Report</h1>
+            <div>
                 <a href="{{ route('report.create') }}" class="mb-2">Make New Report</a>
             </div>
             <hr>
@@ -99,10 +122,10 @@
                                                 {{-- <li><a class="dropdown-item" href="#"></a></li> --}}
                                                 @if ($report->status == 'progress')
                                                     <li><a class="dropdown-item" href="#"
-                                                        v-on:click="cancelAction('{{$report->slug}}')">Cancel</a></li>
+                                                            v-on:click="cancelAction('{{ $report->slug }}')">Cancel</a></li>
                                                 @else
-                                                    <li><a v-on:click="deleteAction('{{$report->slug}}')"
-                                                        class="dropdown-item" href="#">Delete</a></li>
+                                                    <li><a v-on:click="deleteAction('{{ $report->slug }}')"
+                                                            class="dropdown-item" href="#">Delete</a></li>
                                                 @endif
                                             </ul>
                                         </div>
@@ -118,10 +141,12 @@
                 </tbody>
             </table>
         </div>
-
+    
         <x-modal.confirm-report />
-
+    
     </div>
+</div>
+<!--end::App Content-->
 
     <script type="module">
         import {
@@ -132,8 +157,8 @@
             data() {
                 return {
                     file: {},
-                    slug:'',
-                    action:'',
+                    slug: '',
+                    action: '',
                     myModal: {}
                 }
             },

@@ -8,12 +8,31 @@
 @endsection
 
 @section('body')
-    <div id="app" class="container">
-        <div class="mb-3">
-            <h1>Profile</h1>
-            <small class="text-muted">Change Password</small>
-            <hr>
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="mb-0">Edit Profile</h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Change Password
+                    </li>
+                </ol>
+            </div>
         </div>
+        <!--end::Row-->
+    </div>
+    <!--end::Container-->
+</div>
+<!--end::App Content Header-->
+<!--begin::App Content-->
+<div class="app-content">
+    <!--begin::Container-->
+    <div id="app" class="container-fluid">
         <div class="mb-3">
             <form method="post">
                 @method('PUT')
@@ -26,7 +45,9 @@
                 name="password_confirmation" type="password" />
                 <button type="submit" class="btn btn-success">Update</button>
             </form>
-
+    
         </div>
     </div>
+</div>
+<!--end::App Content-->
 @endsection
