@@ -47,6 +47,12 @@ class ReportsPolicy
         return $user->id==$report->user_id
         && $report->status==='progress';
     }
+    
+    public function validator(User $user, Reports $report): bool
+    {
+        return $user->id==$report->target_id
+        && in_array($report->status,['progress','approved']);
+    }
 
     /**
      * Determine whether the user can delete the model.

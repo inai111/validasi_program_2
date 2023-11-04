@@ -67,24 +67,18 @@ Route::group(['middleware'=>'auth'], function (){
         return response()->download(storage_path('app/'.$file->file_path));
     })->name('file.download');
     Route::post('/file/{file}/edit',function(Files $file){
-        $report = Reports::where('id',$file->report_id)->firstOrFail();
-        $data = ['status'=>'accepted','comment'=>"OK"];
+        $report = $file->report;
         $repo = new FileRepository();
-        $repo->updateStatus($file,$data);
+        $repo->acceptFile($file);
         return response()->json(["url"=>route('report.show',['report'=>$report->slug])],201);
-        // return DB::transaction(function()use($file){
-        //     # ambil data report
-        //     $report = Reports::where('id',$file->report_id)->firstOrFail();
-        //     $filePath = request()->file('file_path')->store('pdfs');
-        //     $file = $report->files()->create([
-        //         'file_path' => $filePath,
-        //         'status' => "accepted"
-        //     ]);
-        //     $report->file_id = $file->id;
-        //     $report->save();
-        //     return response()->json(["url"=>route('report.show',['report'=>$report->slug])],201);
-        // });
-    });
+    })->name('file.edit');
+
+    Route::get('/file/{file}/reset',function(Files $file){
+        $repo = new FileRepository();
+        $repo->resetAcceptFile($file);
+        return redirect()->back();
+    })->name('file.reset');
+
     Route::resource('file',FilesController::class)->names([
     'show' => 'file.show',
     'update' => 'file.update',

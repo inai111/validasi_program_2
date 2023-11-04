@@ -45,10 +45,10 @@
                         <h3>{{ $report->subject }}</h3>
 
                         <small>
-                            @can('update', $report)
-                                <span class="text-muted">To: {{ $report->target->name }}</span>
-                            @else
+                            @can('validator', $report)
                                 <span class="text-muted">From: {{ $report->user->name }}</span>
+                            @else
+                                <span class="text-muted">To: {{ $report->target->name }}</span>
                             @endcan
                             , Date: {{ $report->created_at }}</small>
                     </div>
@@ -116,6 +116,15 @@
                                                                 v-on:click="uploadFile('{{ $report->slug }}')"
                                                                 class="btn shadow btn-warning btn-sm">
                                                                 Upload Revision</button>
+                                                        @endif
+                                                    @endcan
+                                                    @can('validator', $report)
+                                                        @if ($report->status == 'approved')
+                                                            <a href="{{route('file.reset',['file'=>$file->slug])}}" class="btn shadow btn-secondary btn-sm">
+                                                                Reset File</a>
+                                                            <a href="{{route('file.edit',['file'=>$file->slug])}}"
+                                                                class="btn shadow btn-warning btn-sm">
+                                                                Edit Accepted File</a>
                                                         @endif
                                                     @endcan
                                                 </div>

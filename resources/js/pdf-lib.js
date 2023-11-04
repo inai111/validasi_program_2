@@ -75,23 +75,27 @@ const appPdf = createApp({
       // cek semua dari page yang telah di tampilkan
       document.querySelectorAll(`#viewerContainer .page`).forEach(page=>{
         const stamps = page.querySelectorAll(`.stamp-container .draggable`);
+        const canvaY = page.querySelector('canvas').style.height.replace('px','');
         if(stamps.length > 0){
           const pagePdf = pdfDoc.getPages()[page.dataset.pageNumber-1];
           stamps.forEach(async stamp=>{
             const width = stamp.style.width||"100px";
             const height = stamp.style.height||"100px";
             const transform = stamp.style.transform||"translate(0px, 0px)";
-            const [,x, y] = transform.match(/translate\((-?\d+)px, (-?\d+)px\)/);
+            const xy = transform.match(/-?[\d\.]+/g);
+            const x = xy[0];
+            const y = xy[1]??1;
             const imageJpeg = await pdfDoc.embedJpg(this.imageBuff);
-
-            let [convertX,convertY] = [x/1.3333333,pagePdf.getHeight()-(Number(y)/1.3333333)];
-            let [widthImg,heightImg] = [Number(width.replace('px', '')),Number(height.replace('px', ''))];
+            
+            // let [convertX,convertY] = [x/1.3333333,pagePdf.getHeight()-(Number(y)/1.3333333)];;
+            let [widthImg,heightImg] = [Number(width.replace('px', '')/1.333),Number(height.replace('px', '')/1.333)];
             let [widthPdf,heightPdf] = [pagePdf.getWidth(),pagePdf.getHeight()];
+            let [convertX,convertY] = [x/1.333,(heightPdf-(y/1.3333333))-(heightImg/2)];
 
             if (convertX < 0) convertX = 0;
             if (convertY < 0) convertY = 0;
-            if (convertX > widthPdf - 100) convertX = widthPdf - 100 - (widthImg/2);
-            if (convertY > heightPdf - 100) convertY = heightPdf - 100 - (heightImg/2);
+            if (convertX > widthPdf-(widthImg/2)) convertX = widthPdf - (widthImg/2);
+            if (convertY > heightPdf-(heightImg/2)) convertY = heightPdf-(heightImg/2);
 
             let option = {
               x: Number(convertX),
@@ -99,26 +103,20 @@ const appPdf = createApp({
               width: Number(widthImg)/1.3333333,
               height: Number(heightImg)/1.3333333,
             };
+
+            // alert(`${widthPdf}, ${heightPdf},${x},${y},${option.x},${option.y},${fullHeight}`);
             pagePdf.drawImage(imageJpeg,option);
           })
           
         }
       })
 
+      // return;
       // Simpan PDF yang telah diedit ke file baru
       const editedPdfBytes = await pdfDoc.save();
       let formdata = new FormData();
       formdata.append('file_path', new Blob([editedPdfBytes], { type: 'application/pdf' }), 'file.pdf')
       axios.post(location.pathname, formdata)
-        // fetch('/file/60fcf12a-5dac-11ee-8e02-00ff6b16807a/edit',{
-        //   method:"PUT",
-        //   body:formdata,
-        //   headers:{
-        //     // "x-csrf-token":document.querySelector(`meta[name=csrf-token]`).content,
-        //     'content-type':"multipart/form-data"
-        //   }
-        // })
-        // .then(ee=>ee.json())
         .then(ee =>{
           if(ee.data.url){
             location.href = ee.data.url
@@ -195,8 +193,8 @@ const appPdf = createApp({
       this.modal.hide();
       this.$refs.stampButton.classList.add('disabled')
       this.disabledStamp = true;
-      console.log(this.imageUrl,this.imageBuff)
-      let container = document.querySelector(`#viewerContainer .page[data-page-number="1"] .stamp-container`);
+
+      let container = document.querySelector(`#viewerContainer .page[data-page-number="${this.page}"] .stamp-container`);
       if (!container) {
         let div = document.createElement('div');
         let page = this.page;

@@ -7,7 +7,7 @@
 @section('body')
 <style>
     body{
-        background-color:var(--bs-gray-300);
+        background-color:var(--bs-gray-300)!important;
     }
     #viewerContainer {
       overflow: auto;
@@ -18,13 +18,14 @@
 </style>
     <div id="appPdf" class="pb-3">
         <div class="toolbar">
-            <nav class="navbar fixed-top bg-dark border-bottom border-body" data-bs-theme="dark">
+            <nav class="navbar bg-light" data-bs-theme="dark"
+            style="position: fixed;top: 0;margin-top: 3rem;width: -moz-available;z-index: 1000;">
                 <div class="container-fluid">
                     <input type="number" v-model="page" min="1" v-on:change="page=2;showPdfPage()"
                         :max="pageMax">
                     <div class="navbar-nav flex-row gap-3">
                         <a class="nav-link" href="#">
-                            <button ref="stampButton" v-on:click="openModal()" class="btn btn-outline-light btn-sm">
+                            <button ref="stampButton" v-on:click="openModal()" class="btn btn-outline-primary btn-sm">
                                 Stamp
                             </button>
                         </a>

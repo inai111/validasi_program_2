@@ -7,12 +7,12 @@
     "src": "node_modules/pdfjs-dist/web/images/loading-icon.gif"
   },
   "resources/css/app.css": {
-    "file": "assets/app-4ed993c7.js",
+    "file": "assets/app-0b08c21c.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
   "resources/js/app.js": {
-    "file": "assets/app-8e31f628.js",
+    "file": "assets/app-1b7f5b6d.js",
     "imports": [
       "_axios-82afda87.js"
     ],
@@ -40,7 +40,7 @@
     "css": [
       "assets/show-file.bundle-a5cac9aa.css"
     ],
-    "file": "assets/show-file.bundle-35df8111.js",
+    "file": "assets/show-file.bundle-d0a1e7d0.js",
     "imports": [
       "_axios-82afda87.js"
     ],

@@ -27,7 +27,7 @@ class Files extends Model
     }
 
     protected $fillable = [
-        'file_path','description'
+        'file_path','description', 'status','file_orig'
     ];
 
     public function report()

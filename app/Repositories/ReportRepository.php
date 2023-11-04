@@ -65,6 +65,7 @@ class ReportRepository
             $report->files()->create([
                 'description' => $data['description'],
                 'file_path' => $filePath,
+                'file_orig' => $filePath,
             ]);
         });
     }
